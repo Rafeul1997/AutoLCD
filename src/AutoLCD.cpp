@@ -1,14 +1,21 @@
 #include "AutoLCD.h"
 #include <Wire.h>
 
+// Common I2C LCD addresses
 const byte addresses[] = {0x27, 0x3F, 0x26, 0x20};
 
-AutoLCD::AutoLCD(uint8_t cols, uint8_t rows) {
+AutoLCD::AutoLCD(uint8_t sda, uint8_t scl, uint8_t cols, uint8_t rows) {
+
+  _sda = sda;
+  _scl = scl;
+
   _cols = cols;
   _rows = rows;
+
   lcd = nullptr;
 }
 
+// Auto detect LCD address
 byte AutoLCD::findAddress() {
 
   for (byte i = 0; i < sizeof(addresses); i++) {
@@ -25,12 +32,14 @@ byte AutoLCD::findAddress() {
 
 bool AutoLCD::begin() {
 
-  Wire.begin();
+  // Start I2C with custom pins
+  Wire.begin(_sda, _scl);
 
   byte addr = findAddress();
 
   if (addr == 0) return false;
 
+  // Use custom screen size here
   lcd = new LiquidCrystal_I2C(addr, _cols, _rows);
   lcd->init();
   lcd->backlight();
@@ -42,7 +51,6 @@ bool AutoLCD::begin() {
 void AutoLCD::printLine(uint8_t line, String text) {
 
   if (!lcd) return;
-
   if (line >= _rows) return;
 
   lcd->setCursor(0, line);
