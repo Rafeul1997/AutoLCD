@@ -8,7 +8,7 @@ class AutoLCD {
 
   public:
 
-    AutoLCD(uint8_t cols = 16, uint8_t rows = 2);
+    AutoLCD(uint8_t sda, uint8_t scl, uint8_t cols = 16, uint8_t rows = 2);
 
     bool begin();
 
@@ -17,11 +17,13 @@ class AutoLCD {
   private:
 
     LiquidCrystal_I2C *lcd;
+
+    uint8_t _sda;
+    uint8_t _scl;
     uint8_t _cols;
     uint8_t _rows;
 
     byte findAddress();
-
 };
 
 #endif
